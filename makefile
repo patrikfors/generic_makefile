@@ -2,7 +2,7 @@ NAME:=foo
 
 UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
-	CXXFLAGS=-Wall -stdlib=libc++
+	CXXFLAGS+=-Wall -stdlib=libc++
 	CFLAGS+=-ggdb -std=c99
 	LDFLAGS+=-g -stdlib=libc++
 else
