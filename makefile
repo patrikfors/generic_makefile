@@ -21,9 +21,11 @@ DEPS:=$(OBJS:%.o=%.depends)
 
 all: $(NAME)
 
+watch:
+	while true ; do inotifywait -qe close_write $(SOURCES); $(MAKE) ; done
+
 $(NAME): $(OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $^
-
 
 clean:
 	rm -rf $(OBJS) *.elf *.gdb *~ $(DEPS) $(NAME) *.orig
