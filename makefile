@@ -17,7 +17,7 @@ OBJS=$(addsuffix .o, $(basename $(SOURCES)))
 # generate dependency targets
 DEPS:=$(OBJS:%.o=%.depends)
 
-.PHONY: clean all tags
+.PHONY: clean all tags show_gcc_implicit_defines
 
 all: $(NAME)
 
@@ -32,6 +32,9 @@ clean:
 
 tags:
 	ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .
+
+show_gcc_implicit_defines:
+	gcc -dM -E - < /dev/null
 
 # pattern rules for generating dependency files
 %.depends: %.cpp
