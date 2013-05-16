@@ -21,8 +21,16 @@ DEPS:=$(OBJS:%.o=%.depends)
 
 all: $(NAME)
 
-watch:
+linux-watch:
 	while true ; do inotifywait -qe close_write $(SOURCES); $(MAKE) ; done
+
+#requires /usr/ports/sysutils/wait_on
+freebsd-watch:
+        while true ; do wait_on $(SOURCES) ; $(MAKE) ; done
+
+#requires https://github.com/alandipert/fswatch
+osx-watch:
+	while true ; do fswatch . $(MAKE) ; done
 
 $(NAME): $(OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $^
