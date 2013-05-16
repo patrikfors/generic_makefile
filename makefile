@@ -26,7 +26,7 @@ linux-watch:
 
 #requires /usr/ports/sysutils/wait_on
 freebsd-watch:
-        while true ; do wait_on $(SOURCES) ; $(MAKE) ; done
+	while true ; do wait_on $(SOURCES) ; $(MAKE) ; done
 
 #requires https://github.com/alandipert/fswatch
 osx-watch:
