@@ -1,16 +1,28 @@
 NAME:=foo
 
 UNAME := $(shell uname)
+INCLUDEPATH := 
+LIBPATH := 
+
 ifeq ($(UNAME), Darwin)
-	CXXFLAGS+=-Wall -stdlib=libc++
-	CFLAGS+=-ggdb -std=c99
-	LDFLAGS+=-g -stdlib=libc++
+	CXXFLAGS+=-Wall -stdlib=libc++ $(INCLUDEPATH)
+	CFLAGS+=-ggdb -std=c99 $(INCLUDEPATH)
+	LDFLAGS+=-g -stdlib=libc++ $(LIBPATH)
 else
-	CFLAGS+=-ggdb -std=c99
-	CXXFLAGS+=-ggdb -std=c++0x -Wall
-	LDFLAGS+=-g
+	ifeq ($(UNAME), FreeBSD)
+		CXX := clang++
+		CC := clang
+		CFLAGS += -g -Wall $(INCLUDEPATH)
+		CXXFLAGS += -g -Wall $(INCLUDEPATH)
+		LDFLAGS += -g $(LIBPATH)
+	else
+		CFLAGS += -ggdb -std=c99 -Wall $(INCLUDEPATH)
+		CXXFLAGS += -ggdb -std=c++0x -Wall $(INCLUDEPATH)
+		LDFLAGS += -g $(LIBPATH)
+	endif
 endif
 
+HEADERS:=$(wildcard *.h)
 SOURCES:=$(wildcard *.cpp *.c)
 OBJS=$(addsuffix .o, $(basename $(SOURCES)))
 
@@ -21,12 +33,13 @@ DEPS:=$(OBJS:%.o=%.depends)
 
 all: $(NAME)
 
+#require inotify-tools (ubuntu)
 linux-watch:
-	while true ; do inotifywait -qe close_write $(SOURCES); $(MAKE) ; done
+	while true ; do inotifywait -qe close_write $(SOURCES) $(HEADERS) makefile; $(MAKE) ; done
 
 #requires /usr/ports/sysutils/wait_on
 freebsd-watch:
-	while true ; do wait_on $(SOURCES) ; $(MAKE) ; done
+	while true ; do wait_on $(SOURCES) $(HEADERS) makefile; $(MAKE) ; done
 
 #requires https://github.com/alandipert/fswatch
 osx-watch:
